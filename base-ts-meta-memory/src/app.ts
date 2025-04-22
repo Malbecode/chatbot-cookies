@@ -1,39 +1,11 @@
-import {
-  createBot,
-  createProvider,
-  createFlow,
-  addKeyword,
-} from "@builderbot/bot";
+import { createBot, createProvider } from "@builderbot/bot";
 import { MemoryDB as Database } from "@builderbot/bot";
 import { MetaProvider as Provider } from "@builderbot/provider-meta";
+import { adapterFlow } from "./flows";
 
 const PORT = process.env.PORT ?? 3008;
 
-const welcomeFlow = addKeyword<Provider, Database>(["hi", "hello", "hola"])
-  .addAnswer(`🙌 Hello welcome to this *Chatbot*`)
-  .addAnswer(
-    [
-      "I share with you the following links of interest about the project",
-      "👉 *doc* to view the documentation",
-    ].join("\n"),
-    { delay: 800, capture: true },
-    async (ctx, { fallBack }) => {
-      if (!ctx.body.toLocaleLowerCase().includes("doc")) {
-        return fallBack("You should type *doc*");
-      }
-      return;
-    }
-  )
-  .addAnswer(
-    [
-      "You can see the documentation here",
-      "📄 https://builderbot.app/docs",
-    ].join("\n")
-  )
-  .addAnswer("Thanks for using this chatbot!");
-
 const main = async () => {
-  const adapterFlow = createFlow([welcomeFlow]);
   const adapterProvider = createProvider(Provider, {
     jwtToken: "jwtToken",
     numberId: "numberId",
