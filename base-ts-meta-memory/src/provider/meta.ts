@@ -1,5 +1,8 @@
 import { createProvider } from "@builderbot/bot";
 import { MetaProvider } from "@builderbot/provider-meta";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const adapterProvider = createProvider(MetaProvider, {
   jwtToken: process.env.JWT_TOKEN,
