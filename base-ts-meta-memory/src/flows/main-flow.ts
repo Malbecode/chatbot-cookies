@@ -1,8 +1,8 @@
 import { addKeyword, EVENTS } from "@builderbot/bot";
+import { intentionsFlow } from "./intentios-flow";
 
-export const mainFlow = addKeyword(EVENTS.ACTION).addAction(
+export const mainFlow = addKeyword(EVENTS.WELCOME).addAction(
   async (ctx, ctxFn) => {
-    const response = "Este es el flujo principal";
-    return ctxFn.endFlow(response);
+    return ctxFn.gotoFlow(intentionsFlow);
   }
 );
