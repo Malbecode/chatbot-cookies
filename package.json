@@ -14,8 +14,10 @@
   "dependencies": {
     "@builderbot-plugins/langchain": "1.0.0-alpha.0",
     "@builderbot/bot": "1.2.5",
+    "@builderbot/provider-baileys": "^1.2.5",
     "@builderbot/provider-meta": "1.2.5",
     "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "openai": "^4.95.1"
   },
   "devDependencies": {
