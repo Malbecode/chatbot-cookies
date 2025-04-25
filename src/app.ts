@@ -1,8 +1,10 @@
 import { createBot } from "@builderbot/bot";
 import { MemoryDB as Database } from "@builderbot/bot";
 import { adapterFlow } from "./flows";
-import { adapterProvider } from "./provider/meta";
+// import { adapterProvider } from "./provider/meta";
+import { adapterProvider } from "./provider/baileys";
 import dotenv from "dotenv";
+import { chatwootController } from "./controllers/chatwoot";
 
 dotenv.config();
 
@@ -11,15 +13,24 @@ const PORT = process.env.PORT ?? 3008;
 const main = async () => {
   const adapterDB = new Database();
 
-  const { handleCtx, httpServer } = await createBot({
+  const bot = await createBot({
     flow: adapterFlow,
     provider: adapterProvider,
     database: adapterDB,
   });
 
   adapterProvider.server.post(
+    "/v1/chatwoot",
+    bot.handleCtx(async (bot, req, res) => {
+      const payload = req.body;
+      console.log("payload: ", payload);
+      return res.end("sended");
+    })
+  );
+
+  adapterProvider.server.post(
     "/v1/messages",
-    handleCtx(async (bot, req, res) => {
+    bot.handleCtx(async (bot, req, res) => {
       const { number, message, urlMedia } = req.body;
       await bot.sendMessage(number, message, { media: urlMedia ?? null });
       return res.end("sended");
@@ -28,7 +39,7 @@ const main = async () => {
 
   adapterProvider.server.post(
     "/v1/register",
-    handleCtx(async (bot, req, res) => {
+    bot.handleCtx(async (bot, req, res) => {
       const { number, name } = req.body;
       await bot.dispatch("REGISTER_FLOW", { from: number, name });
       return res.end("trigger");
@@ -37,7 +48,7 @@ const main = async () => {
 
   adapterProvider.server.post(
     "/v1/samples",
-    handleCtx(async (bot, req, res) => {
+    bot.handleCtx(async (bot, req, res) => {
       const { number, name } = req.body;
       await bot.dispatch("SAMPLES", { from: number, name });
       return res.end("trigger");
@@ -46,7 +57,7 @@ const main = async () => {
 
   adapterProvider.server.post(
     "/v1/blacklist",
-    handleCtx(async (bot, req, res) => {
+    bot.handleCtx(async (bot, req, res) => {
       const { number, intent } = req.body;
       if (intent === "remove") bot.blacklist.remove(number);
       if (intent === "add") bot.blacklist.add(number);
@@ -56,7 +67,25 @@ const main = async () => {
     })
   );
 
-  httpServer(+PORT);
+  bot.httpServer(+PORT);
+
+  adapterProvider.on(
+    "message",
+    bot.handleCtx(async (bot, req, res) => {
+      chatwootController.handleIncomingMessage(req, res);
+    })
+  );
+
+  bot.on("send_message", ({ answer, from }) => {
+    console.log(`Send Message Payload:`, { answer, from });
+  });
 };
 
 main();
+
+/*
+todo:
+[ ] Para optimizar, recuerda que no es necesario recrear contacto/conversación cada vez: puedes hacerlo solo la primera vez por 
+  cada usuario y luego reutilizar los IDs guardados. Por ejemplo, guarda en un objeto/BD la relación telefono -> conversationId después 
+  del primer mensaje, así en siguientes mensajes saltas directo al crear mensaje (y si fallara porque la conv se cerró, manejas creando una nueva).
+ */
