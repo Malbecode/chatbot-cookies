@@ -12,16 +12,11 @@ export const chatwootController = {
         contactInbox.inbox.id
       );
 
-      console.log("conversationId: ", conversationId);
-
       const message = await chatwootService.sendMessage(conversationId, body);
 
       console.log("message: ", message);
-
-      res.status(200).send("Message processed successfully.");
     } catch (error) {
       console.error("Error handling incoming message:", error);
-      res.status(500).send("Internal Server Error");
     }
   },
 };

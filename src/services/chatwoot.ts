@@ -35,16 +35,15 @@ export const chatwootService = {
       `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/conversations`,
       {
         method: "POST",
-        headers: { api_access_token: CHATWOOT_API_TOKEN! },
+        headers: {
+          "Content-Type": "application/json",
+          api_access_token: CHATWOOT_API_TOKEN!,
+        },
         body: JSON.stringify({ source_id: sourceId, inbox_id: inboxId }),
       }
     );
 
-    console.log("createConversation response: ", response);
-
     const data = await response.json();
-
-    console.log("createConversation data: ", data);
 
     return data.id;
   },
@@ -54,7 +53,10 @@ export const chatwootService = {
       `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/conversations/${conversationId}/messages`,
       {
         method: "POST",
-        headers: { api_access_token: CHATWOOT_API_TOKEN! },
+        headers: {
+          "Content-Type": "application/json",
+          api_access_token: CHATWOOT_API_TOKEN!,
+        },
         body: JSON.stringify({
           content,
           message_type: "incoming",
@@ -62,11 +64,7 @@ export const chatwootService = {
       }
     );
 
-    console.log("sendMessage response: ", response);
-
     const data = await response.json();
-
-    console.log("sendMessage data: ", data);
 
     return data;
   },
