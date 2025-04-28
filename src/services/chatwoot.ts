@@ -22,23 +22,14 @@ export const chatwootService = {
 
     const data = await response.json();
 
-    // Filtrar localmente por número de teléfono
     const contact = data.payload.find(
       (contact: any) => contact.phone_number === `+${phoneNumber}`
     );
 
-    return contact;
+    return { contact, contactInbox: contact.contact_inboxes[0] };
   },
 
   createContact: async (name: string, phoneNumber: string) => {
-    const existingContact = await chatwootService.getContactByPhoneNumber(
-      phoneNumber
-    );
-
-    if (existingContact) {
-      return existingContact;
-    }
-
     const response = await fetch(
       `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/contacts`,
       {
@@ -57,7 +48,31 @@ export const chatwootService = {
 
     const data = await response.json();
 
-    return data.payload;
+    return {
+      newContact: data.payload.contact,
+      newContactInbox: data.payload.contact_inbox,
+    };
+  },
+
+  getOpenConversation: async (contactId: number) => {
+    const response = await fetch(
+      `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/contacts/${contactId}/conversations`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          api_access_token: CHATWOOT_API_TOKEN!,
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    const openConversation = data.payload.find(
+      (conversation: any) => conversation.status === "open"
+    );
+
+    return openConversation;
   },
 
   createConversation: async (sourceId: string, inboxId: number) => {

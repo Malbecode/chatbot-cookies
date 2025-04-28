@@ -82,10 +82,3 @@ const main = async () => {
 };
 
 main();
-
-/*
-todo:
-[ ] Para optimizar, recuerda que no es necesario recrear contacto/conversación cada vez: puedes hacerlo solo la primera vez por 
-  cada usuario y luego reutilizar los IDs guardados. Por ejemplo, guarda en un objeto/BD la relación telefono -> conversationId después 
-  del primer mensaje, así en siguientes mensajes saltas directo al crear mensaje (y si fallara porque la conv se cerró, manejas creando una nueva).
- */
