@@ -9,13 +9,10 @@ export const chatwootController = {
       const { contact: existingContact, contactInbox: existingContactInbox } =
         await chatwootService.getContactByPhoneNumber(from);
 
-      let contact;
-      let contactInbox;
+      let contact = existingContact;
+      let contactInbox = existingContactInbox;
 
-      if (existingContact) {
-        contact = existingContact;
-        contactInbox = existingContactInbox;
-      } else {
+      if (!existingContact) {
         const { newContact, newContactInbox } =
           await chatwootService.createContact(name, from);
 
@@ -23,15 +20,12 @@ export const chatwootController = {
         contactInbox = newContactInbox;
       }
 
-      const openConversation = await chatwootService.getOpenConversation(
-        contact.id
-      );
+      const existingConversation =
+        await chatwootService.getExistingConversation(contact.id);
 
-      let conversationId;
+      let conversationId = existingConversation?.id;
 
-      if (openConversation) {
-        conversationId = openConversation.id;
-      } else {
+      if (!existingConversation) {
         conversationId = await chatwootService.createConversation(
           contactInbox.source_id,
           contactInbox.inbox.id

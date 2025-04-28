@@ -68,7 +68,7 @@ export const chatwootService = {
     };
   },
 
-  getOpenConversation: async (contactId: number) => {
+  getExistingConversation: async (contactId: number) => {
     const response = await fetch(
       `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/contacts/${contactId}/conversations`,
       {
@@ -87,13 +87,14 @@ export const chatwootService = {
 
     const data = await response.json();
 
-    console.log("data: ", data);
+    const conversation =
+      data.payload.length > 0
+        ? data.payload.find((conversation: any) => {
+            return conversation.inbox_id === Number(INBOX_ID);
+          })
+        : null;
 
-    const openConversation = data.payload.find(
-      (conversation: any) => conversation.status === "open"
-    );
-
-    return openConversation;
+    return conversation;
   },
 
   createConversation: async (sourceId: string, inboxId: number) => {
