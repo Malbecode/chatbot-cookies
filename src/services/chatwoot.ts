@@ -31,7 +31,7 @@ export const chatwootService = {
       (contact: any) => contact.phone_number === `+${phoneNumber}`
     );
 
-    const contactInbox = contact.contact_inboxes.find((inbox: any) => {
+    const contactInbox = contact?.contact_inboxes.find((inbox: any) => {
       return inbox.inbox.id === Number(INBOX_ID);
     });
 
