@@ -20,6 +20,11 @@ export const chatwootService = {
       }
     );
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al buscar el contacto: ${errorData.message}`);
+    }
+
     const data = await response.json();
 
     const contact = data.payload.find(
@@ -50,6 +55,11 @@ export const chatwootService = {
       }
     );
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al crear contacto: ${errorData.message}`);
+    }
+
     const data = await response.json();
 
     return {
@@ -70,7 +80,14 @@ export const chatwootService = {
       }
     );
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al buscar la conversacion: ${errorData.message}`);
+    }
+
     const data = await response.json();
+
+    console.log("data: ", data);
 
     const openConversation = data.payload.find(
       (conversation: any) => conversation.status === "open"
@@ -92,6 +109,11 @@ export const chatwootService = {
       }
     );
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al crear la conversacion: ${errorData.message}`);
+    }
+
     const data = await response.json();
 
     return data.id;
@@ -112,6 +134,11 @@ export const chatwootService = {
         }),
       }
     );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al recibir el mensaje: ${errorData.message}`);
+    }
 
     const data = await response.json();
 
