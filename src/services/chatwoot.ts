@@ -10,7 +10,7 @@ const CHATWOOT_API_TOKEN = process.env.CHATWOOT_API_TOKEN;
 export const chatwootService = {
   getContactByPhoneNumber: async (phoneNumber: string) => {
     const response = await fetch(
-      `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/contacts`,
+      `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/contacts/search?q=${phoneNumber}`,
       {
         method: "GET",
         headers: {
@@ -26,7 +26,11 @@ export const chatwootService = {
       (contact: any) => contact.phone_number === `+${phoneNumber}`
     );
 
-    return { contact, contactInbox: contact.contact_inboxes[0] };
+    const contactInbox = contact.contact_inboxes.find((inbox: any) => {
+      return inbox.inbox.id === Number(INBOX_ID);
+    });
+
+    return { contact, contactInbox };
   },
 
   createContact: async (name: string, phoneNumber: string) => {
