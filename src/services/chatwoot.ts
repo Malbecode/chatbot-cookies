@@ -87,14 +87,17 @@ export const chatwootService = {
 
     const data = await response.json();
 
-    const conversation =
-      data.payload.length > 0
-        ? data.payload.find((conversation: any) => {
-            return conversation.inbox_id === Number(INBOX_ID);
-          })
-        : null;
+    const conversationsInInbox = data.payload.filter(
+      (conversation: any) => conversation.inbox_id === Number(INBOX_ID)
+    );
 
-    return conversation;
+    conversationsInInbox.sort(
+      (a: any, b: any) =>
+        new Date(b.last_activity_at).getTime() -
+        new Date(a.last_activity_at).getTime()
+    );
+
+    return conversationsInInbox[0] || null;
   },
 
   createConversation: async (sourceId: string, inboxId: number) => {
