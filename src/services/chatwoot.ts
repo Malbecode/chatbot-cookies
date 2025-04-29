@@ -120,7 +120,7 @@ export const chatwootService = {
     return data.id;
   },
 
-  sendMessage: async (conversationId: number, content: string) => {
+  receiveMessage: async (conversationId: number, content: string) => {
     const response = await fetch(
       `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/conversations/${conversationId}/messages`,
       {
@@ -139,6 +139,33 @@ export const chatwootService = {
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`Error al recibir el mensaje: ${errorData.message}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  },
+
+  sendMessage: async (conversationId: number, content: string) => {
+    const response = await fetch(
+      `${CHATWOOT_API_URL}/api/v1/accounts/${ACCOUNT_ID}/conversations/${conversationId}/messages`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          api_access_token: CHATWOOT_API_TOKEN!,
+        },
+        body: JSON.stringify({
+          content,
+          message_type: "outgoing",
+          private: false,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error al enviar el mensaje: ${errorData.message}`);
     }
 
     const data = await response.json();

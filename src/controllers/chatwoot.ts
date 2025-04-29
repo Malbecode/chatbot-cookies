@@ -32,11 +32,25 @@ export const chatwootController = {
         );
       }
 
-      const message = await chatwootService.sendMessage(conversationId, body);
-
-      console.log("message: ", message);
+      await chatwootService.receiveMessage(conversationId, body);
     } catch (error) {
       console.error("Error handling incoming message:", error);
+    }
+  },
+
+  handleOutgoingMessage: async (req: Request, res: Response) => {
+    try {
+      const { answer, from } = req;
+
+      const { contact } = await chatwootService.getContactByPhoneNumber(from);
+
+      const conversation = await chatwootService.getExistingConversation(
+        contact.id
+      );
+
+      await chatwootService.sendMessage(conversation.id, answer);
+    } catch (error) {
+      console.error("Error handling outgoing message:", error);
     }
   },
 };

@@ -76,9 +76,12 @@ const main = async () => {
     })
   );
 
-  bot.on("send_message", ({ answer, from }) => {
-    console.log(`Send Message Payload:`, { answer, from });
-  });
+  bot.on(
+    "send_message",
+    bot.handleCtx(async (bot, req, res) => {
+      chatwootController.handleOutgoingMessage(req, res);
+    })
+  );
 };
 
 main();
